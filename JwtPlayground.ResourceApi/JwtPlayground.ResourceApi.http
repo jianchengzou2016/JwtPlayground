@@ -1,0 +1,6 @@
+@JwtPlayground.ResourceApi_HostAddress = http://localhost:5275
+
+GET {{JwtPlayground.ResourceApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
