@@ -1,0 +1,44 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "AuthServer",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/JwtPlayground.AuthServer/JwtPlayground.AuthServer.csproj",
+      "launchSettingsProfile": "https"
+    },
+    {
+      "name": "ResourceApi",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/JwtPlayground.ResourceApi/JwtPlayground.ResourceApi.csproj",
+      "launchSettingsProfile": "https"
+    },
+    {
+      "name": "ConsoleClient",
+      "type": "dotnet",
+      "request": "launch",
+      "projectPath": "${workspaceFolder}/ConsoleClient/ConsoleClient.csproj"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Servers",
+      "configurations": [
+        "AuthServer",
+        "ResourceApi"
+      ],
+      "stopAll": true
+    },
+    {
+      "name": "All Projects",
+      "configurations": [
+        "AuthServer",
+        "ResourceApi",
+        "ConsoleClient"
+      ],
+      "stopAll": true
+    }
+  ]
+}

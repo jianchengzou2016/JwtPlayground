@@ -31,9 +31,9 @@
             {
                 sb.AppendLine(base64.Substring(i, Math.Min(64, base64.Length - i)));
             }
+
             sb.AppendLine("-----END PUBLIC KEY-----");
             return sb.ToString();
         }
-
     }
 }
