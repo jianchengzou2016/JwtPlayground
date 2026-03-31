@@ -6,28 +6,31 @@
     using System.Text;
 
     [ApiController]
-    public class KeysController: ControllerBase
+    public class KeysController : ControllerBase
     {
         private readonly RsaSecurityKey _rsaKey;
+
         public KeysController(RsaSecurityKey rsaKey)
         {
             _rsaKey = rsaKey;
         }
-        +++
+
         [HttpGet("/publickey")]
         public IActionResult GetPublicKey()
         {
-            var rsa = _rsaKey.Rsa;
-            return Ok(new {key=ExportPublicKeyPen(rsa), kid = _rsaKey.KeyId});
+            return Ok(new { key = ExportPublicKeyPem(_rsaKey.Rsa), kid = _rsaKey.KeyId });
         }
 
-        private static string ExportPublicKeyPen(RSA rsa)
+        public static string ExportPublicKeyPem(RSA rsa)
         {
             var publicKeyBytes = rsa.ExportSubjectPublicKeyInfo();
             var base64 = Convert.ToBase64String(publicKeyBytes);
             var sb = new StringBuilder();
             sb.AppendLine("-----BEGIN PUBLIC KEY-----");
-            for (int i = 0; i < base64.Length; i += 64) sb.AppendLine(base64.Substring(i, Math.Min(64, base64.Length - i)));
+            for (var i = 0; i < base64.Length; i += 64)
+            {
+                sb.AppendLine(base64.Substring(i, Math.Min(64, base64.Length - i)));
+            }
             sb.AppendLine("-----END PUBLIC KEY-----");
             return sb.ToString();
         }

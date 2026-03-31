@@ -12,6 +12,7 @@ var rsa = RSA.Create(2048);
 var kid = Guid.NewGuid().ToString();
 var rsaKey = new RsaSecurityKey(rsa) { KeyId = kid };
 builder.Services.AddSingleton(rsaKey);
+builder.Services.AddSingleton<TokenService>();
 
 var app = builder.Build();
 

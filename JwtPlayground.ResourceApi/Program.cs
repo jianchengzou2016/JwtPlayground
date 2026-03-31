@@ -13,12 +13,16 @@ builder.Services.AddSwaggerGen();
 
 var authServerbase = builder.Configuration["AuthServer:BaseUrl"] ?? throw new InvalidOperationException("appsettings.json missing definition for the AuthServer");
 
-var httpHandler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator }; //TODO: can I use this in prod code? what's the risk?
+var httpHandler = new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+}; //TODO: can I use this in prod code? what's the risk?
 using var http = new HttpClient(httpHandler);
 var json = http.GetStringAsync($"{authServerbase}/publickey").GetAwaiter().GetResult();
 
 using var doc = System.Text.Json.JsonDocument.Parse(json);
-var pem = doc.RootElement.GetProperty("key").GetString();
+var pem = doc.RootElement.GetProperty("key").GetString()
+    ?? throw new InvalidOperationException("Auth server public key response did not contain a PEM value.");
 
 var rsa = RSA.Create();
 rsa.ImportFromPem(pem);
@@ -46,6 +50,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             },
             OnTokenValidated = context =>
             {
+                if (context.Principal is null)
+                {
+                    return Task.CompletedTask;
+                }
+
                 Console.WriteLine("Token validated. Claims:");
                 foreach (var claim in context.Principal.Claims)
                     Console.WriteLine($" {claim.Type}:{claim.Value}");

@@ -1,14 +1,21 @@
 ﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
-var auth = "https://localhost:7254";   // AuthServer
-var api = "https://localhost:7207";   // ResourceApi
+var auth = "https://localhost:7254"; // AuthServer
+var api = "https://localhost:7207"; // ResourceApi
 
-var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator };
+var handler = new HttpClientHandler
+{
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+};
 using var client = new HttpClient(handler);
 
 // 1) Get token
-var login = new { username = "alice", password = "123" };
+var login = new
+{
+    username = "alice", 
+    password = "123"
+};
 var tokResp = await client.PostAsJsonAsync($"{auth}/token", login);
 tokResp.EnsureSuccessStatusCode();
 var tok = await tokResp.Content.ReadFromJsonAsync<TokenResponse>();

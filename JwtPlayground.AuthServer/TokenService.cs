@@ -2,7 +2,7 @@
 {
     using System.IdentityModel.Tokens.Jwt;
     using System.Security.Claims;
-    using System.Security.Cryptography;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.IdentityModel.Tokens;
     public class TokenService
     {
@@ -14,18 +14,20 @@
             _config = config;
         }
 
-        public string GenerateToken(LoginRequest login)
+        public TokenResponse GenerateToken(LoginRequest login)
         {
             var creds = new SigningCredentials(_rsaKey, SecurityAlgorithms.RsaSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
-                claims: new[] { new Claim(ClaimTypes.NameIdentifier, login.Username) },
+                claims: new[] { new Claim(JwtRegisteredClaimNames.Sub, login.Username) },
                 expires: DateTime.UtcNow.AddDays(1),
                 signingCredentials: creds);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new TokenResponse(
+                new JwtSecurityTokenHandler().WriteToken(token),
+                "Bearer");
         }
 
     }
